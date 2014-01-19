@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script src="physicsjs-full-0.5.3.min.js"></script>
+	<style>
+	* {margin: 0; padding:0;}
+	body { width:100%; height:100%; }
+	canvas { background:grey; display:block; } 
+	</style>
+	</head>
+	<body>
+		<canvas id="viewport"></canvas>
+	</body>
+	<script>
+/**
+ * PhysicsJS by Jasper Palfree <wellcaffeinated.net>
+ * http://wellcaffeinated.net/PhysicsJS
+ *
+ * Simple "Hello world" example
+ */
+ /*var canvas = document.getElementById('canvas');
+ var ctx = canvas.getContext('2d');*/
+ var canvas = document.getElementById('viewport');
+ var ctx = canvas.getContext('2d');
+
+ var keysDown = {};
+
+Physics(function(world){
+
+  var viewWidth = window.innerWidth;
+  var viewHeight = window.innerHeight;
+        
+  var renderer = Physics.renderer('canvas', {
+    el: 'viewport',
+    width: viewWidth,
+    height: viewHeight,
+    meta: false, // don't display meta data
+    styles: {
+        // set colors for the circle bodies
+        'circle' : {
+            strokeStyle: 'hsla(60, 37%, 17%, 1)',
+            lineWidth: 1,
+            fillStyle: 'hsla(60, 37%, 57%, 0.8)',
+            angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
+        }
+    }
+  });
+
+  // add the renderer
+  world.add( renderer );
+  // render on each step
+  world.subscribe('step', function(){
+    world.render();
+  });
+  
+  // bounds of the window
+  var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
+  
+  // constrain objects to these bounds
+  world.add(Physics.behavior('edge-collision-detection', {
+      aabb: viewportBounds,
+      restitution: 0.99,
+      cof: 0.99
+  }));
+
+  // add a circle
+  world.add(
+      Physics.body('circle', {
+        x: 50, // x-coordinate
+        y: 30, // y-coordinate
+        vx: 0, // velocity in x-direction
+        vy: 0, // velocity in y-direction
+        restitution: 0,
+        radius: 20
+      })
+  );
+
+  world.add(
+      Physics.body('circle', {
+        x: 150, // x-coordinate
+        y: 30, // y-coordinate
+        vx: 0, // velocity in x-direction
+        vy: 0, // velocity in y-direction
+        restitution: 0,
+        radius: 21
+      })
+  );
+  // ensure objects bounce when edge collision is detected
+  world.add( Physics.behavior('body-impulse-response') );
+
+  // add some gravity
+  world.add( Physics.behavior('constant-acceleration', {
+    acc: { x : 0, y: 0 }
+    
+  }) );
+
+  // subscribe to ticker to advance the simulation
+  Physics.util.ticker.subscribe(function( time, dt ){
+    
+      world.step( time );
+  });
+
+  window.addEventListener('keydown', function(e) {
+          keysDown[e.keyCode] = true;
+    });
+    window.addEventListener('keyup', function(e) {
+          delete keysDown[e.keyCode];
+    });
+
+  function keyUpdate() {
+        //if (87 in keysDown) {
+          //  peddles[0].move(0);
+        //}
+        if (38 in keysDown) {
+          console.log('up');
+            circle.y--;
+        }
+       // if (83 in keysDown) {
+       //     peddles[0].move(1);
+        //}
+        if (40 in keysDown) {
+          console.log('down');
+            circle.y++;
+        }
+    }
+
+  // start the ticker
+  Physics.util.ticker.start();
+
+});
+	</script>
+</html>
