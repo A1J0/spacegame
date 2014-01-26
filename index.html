@@ -2,6 +2,7 @@
 <html>
 <head>
 	<script src="physicsjs-full-0.5.3.min.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<style>
 	* {margin: 0; padding:0;}
 	body { width:100%; height:100%; }
@@ -12,20 +13,11 @@
 		<canvas id="viewport"></canvas>
 	</body>
 	<script>
-/**
- * PhysicsJS by Jasper Palfree <wellcaffeinated.net>
- * http://wellcaffeinated.net/PhysicsJS
- *
- * Simple "Hello world" example
- */
- /*var canvas = document.getElementById('canvas');
- var ctx = canvas.getContext('2d');*/
  var canvas = document.getElementById('viewport');
  var ctx = canvas.getContext('2d');
-
  var keysDown = {};
 
-Physics(function(world){
+ var ph = Physics(function(world){
 
   var viewWidth = window.innerWidth;
   var viewHeight = window.innerHeight;
@@ -45,88 +37,106 @@ Physics(function(world){
         }
     }
   });
-
   // add the renderer
   world.add( renderer );
   // render on each step
   world.subscribe('step', function(){
     world.render();
   });
-  
   // bounds of the window
   var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
-  
   // constrain objects to these bounds
   world.add(Physics.behavior('edge-collision-detection', {
       aabb: viewportBounds,
       restitution: 0.99,
       cof: 0.99
   }));
-
   // add a circle
-  world.add(
-      Physics.body('circle', {
+  this.ship1 = Physics.body('circle', {
         x: 50, // x-coordinate
         y: 30, // y-coordinate
-        vx: 0, // velocity in x-direction
+        vx: 0.08, // velocity in x-direction
         vy: 0, // velocity in y-direction
-        restitution: 0,
+        restitution: 1,
         radius: 20
-      })
-  );
-
-  world.add(
-      Physics.body('circle', {
+      });
+  world.add(this.ship1);
+  this.ship2 = Physics.body('circle', {
         x: 150, // x-coordinate
         y: 30, // y-coordinate
-        vx: 0, // velocity in x-direction
+        vx: 0.08, // velocity in x-direction
         vy: 0, // velocity in y-direction
-        restitution: 0,
-        radius: 21
-      })
-  );
+        restitution: 1,
+        radius: 20
+      });
+  world.add(this.ship2);
   // ensure objects bounce when edge collision is detected
   world.add( Physics.behavior('body-impulse-response') );
-
   // add some gravity
   world.add( Physics.behavior('constant-acceleration', {
     acc: { x : 0, y: 0 }
-    
   }) );
-
   // subscribe to ticker to advance the simulation
   Physics.util.ticker.subscribe(function( time, dt ){
-    
       world.step( time );
   });
+  // start the ticker
+  Physics.util.ticker.start();
+});
 
-  window.addEventListener('keydown', function(e) {
+window.addEventListener('keydown', function(e) {
           keysDown[e.keyCode] = true;
     });
     window.addEventListener('keyup', function(e) {
+          //ship2 stop angular movement when the key is released
+          if(e.keyCode == 37 || e.keyCode == 39)
+          {
+              ph.ship2.state.angular.vel = 0;
+          }
+          //ship1 stop angular movement when the key is released
+          if(e.keyCode == 65 || e.keyCode == 68)
+          {
+              ph.ship1.state.angular.vel = 0;
+          }
           delete keysDown[e.keyCode];
     });
 
-  function keyUpdate() {
-        //if (87 in keysDown) {
-          //  peddles[0].move(0);
-        //}
-        if (38 in keysDown) {
-          console.log('up');
-            circle.y--;
+  function keyUpdate(){
+        var vel = 0.01;
+        if (87 in keysDown) {
+
+          var v = Physics.vector(
+            //for digonal movement of the ship
+              0.15 * Math.cos( ph.ship1.state.angular.pos ), 
+              0.15 * Math.sin( ph.ship1.state.angular.pos ) 
+          );
+          //speed of the ship
+          ph.ship1.state.vel = ( v );
         }
-       // if (83 in keysDown) {
-       //     peddles[0].move(1);
-        //}
-        if (40 in keysDown) {
-          console.log('down');
-            circle.y++;
+        if (65 in keysDown) {
+          //angle change towards left 
+          ph.ship1.state.angular.vel = 0.2 * (Math.PI/180) * -1;
+        }
+        if (68 in keysDown) {
+          //angle change towards right
+          ph.ship1.state.angular.vel = 0.2 * (Math.PI/180) * 1;
+        }
+        if (38 in keysDown) {
+          
+          var v = Physics.vector(
+              0.15 * Math.cos( ph.ship2.state.angular.pos ), 
+              0.15 * Math.sin( ph.ship2.state.angular.pos ) 
+          );
+          ph.ship2.state.vel = ( v );
+        }
+        if (37 in keysDown) {
+          ph.ship2.state.angular.vel = 0.2 * (Math.PI/180) * -1;
+        }
+        if (39 in keysDown) {
+          ph.ship2.state.angular.vel = 0.2 * (Math.PI/180) * 1;
         }
     }
-
-  // start the ticker
-  Physics.util.ticker.start();
-
-});
+    //keyUpdate function iteration after every 30 ms.
+    setInterval(keyUpdate,30);
 	</script>
 </html>
