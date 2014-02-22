@@ -20,6 +20,7 @@
  var laser = function(x,y,s_vx,s_vy){
 
   return Physics.body('circle', {
+
         x: x, // x-coordinate
         y: y, // y-coordinate
         vx: vx, // velocity in x-direction
@@ -135,10 +136,11 @@ var ship = function(x,y){
               y: this.state.pos.get(1) + r * sin,
               vx: ((0.5 + this.state.vel.get(0)) * cos) * 2,
               vy: ((0.5 + this.state.vel.get(1)) * sin) * 2,
-              radius: 5
+              radius: 5,
           });
           // set a custom property for collision purposes
-          laser.gameType = 'laser';
+          laser.gameType = 'laser-'+self.gameType;
+          
 
           // remove the laser pulse in 600ms
           setTimeout(function(){
@@ -150,16 +152,6 @@ var ship = function(x,y){
         }
       }
    });
-
-   Physics.body('laser','circle', function(parent){
-      return {
-        destory : function(){
-          console.log("DESTROY!");
-          world.removeBody(this);
-        }
-      }
-   });
-
 
   var viewWidth = canvas.width;
   var viewHeight = canvas.height;
@@ -210,18 +202,19 @@ var ship = function(x,y){
 
       // subscribe to collision pair
       world.subscribe('collision-pair', function( data ){
-          //console.log(data.bodyA.gameType, data.bodyB.gameType);
 
-          if(data.bodyA.gameType == "ship1" || data.bodyB.gameType == "ship1")
+          if((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "laser-ship1") || (data.bodyA.gameType == "laser-ship1" && data.bodyB.gameType == "ship2"))
           {
-            var w = data.bodyA._world;
-            w.ship1.destroy();
-          }
-
-          if(data.bodyA.gameType == "ship2" || data.bodyB.gameType == "ship2")
-          {
+            console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
             var w = data.bodyA._world;
             w.ship2.destroy();
+          }
+
+          if((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "laser-ship2") || (data.bodyA.gameType == "laser-ship2" && data.bodyB.gameType == "ship1"))
+          {
+            console.log("SHIP1")
+            var w = data.bodyA._world;
+            w.ship1.destroy();
           }
 
       });
@@ -301,6 +294,50 @@ window.addEventListener('keydown', function(e) {
 
     }
     //keyUpdate function iteration after every 30 ms.
-    setInterval(keyUpdate,30);
+    setInterval(keyUpdate,200);
 	</script>
+  <script src="http://192.168.2.7:8080/socket.io/socket.io.js"></script>
+<script>
+  var socket = io.connect('http://192.168.2.7:8080');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.on('joined', function(data){
+      console.log(data.name);
+      room = data.name
+    });
+    socket.emit('join', { });
+
+    setInterval(function(){
+      var objs = [];
+      for (var i = ph._bodies.length - 1; i >= 0; i--) {
+        var obj = {};
+        obj.state = ph._bodies[i].state;
+        obj.options = ph._bodies[i].options;
+        obj.gameType = ph._bodies[i].gameType;
+        objs.push(obj);
+      };
+      socket.emit("comm", {name : room, event : "bodies", data : objs})
+    }, 200);
+
+  });
+  socket.on('key', function (data) {
+    switch(data.key) {
+      case 77:
+           ph.ship2.shoot(); 
+        break;
+      case 39:
+           ph.ship2.turnl();
+        break;
+
+      case 38:
+            ph.ship2.thrust();
+        break;
+
+      case 37:
+            ph.ship2.turnr();
+        break;
+    }
+  });
+
+</script>
 </html>
