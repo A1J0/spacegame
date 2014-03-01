@@ -10,52 +10,126 @@
   </style>
   </head>
   <body>
+<<<<<<< HEAD
     <canvas id="viewport" width = "960" height = "580"></canvas>
   </body>
   <script>
-    var canvas = document.getElementById('viewport');
-    var ctx = canvas.getContext('2d');
-    var keysDown = {};
+        var canvas = document.getElementById('viewport');
+        var ctx = canvas.getContext('2d');
+        var keysDown = {};
 
-    var ph = Physics(function(world){
+        var ph = Physics(function(world){
+          var viewWidth = canvas.width;
+          var viewHeight = canvas.height;
+              
+          var renderer = Physics.renderer('canvas', {
+            el: 'viewport',
+            width: viewWidth,
+            height: viewHeight,
+            meta: false, // don't display meta data
+            styles: {
+              // set colors for the circle bodies
+              'circle' : {
+                  strokeStyle: 'hsla(60, 37%, 17%, 1)',
+                  lineWidth: 1,
+                  fillStyle: 'hsla(60, 37%, 57%, 0.8)',
+                  angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
+              }
+          }
+        });
+         
+        // add the renderer
+        world.add( renderer );
+        // render on each step
+        world.subscribe('step', function(){
+          world.render();
+        });
 
-    var viewWidth = canvas.width;
-    var viewHeight = canvas.height;
+        Physics.util.ticker.subscribe(function( time, dt ){
+          
+            world.step( time );
+        });
+
+        // start the ticker
+        Physics.util.ticker.start();
+
+        });
         
-    var renderer = Physics.renderer('canvas', {
-      el: 'viewport',
-      width: viewWidth,
-      height: viewHeight,
-      meta: false, // don't display meta data
-      styles: {
-        // set colors for the circle bodies
-        'circle' : {
-            strokeStyle: 'hsla(60, 37%, 17%, 1)',
-            lineWidth: 1,
-            fillStyle: 'hsla(60, 37%, 57%, 0.8)',
-            angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
-        }
-    }
-  });
-   
-  // add the renderer
-  world.add( renderer );
-  // render on each step
-  world.subscribe('step', function(){
-    world.render();
-  });
+          window.addEventListener('keydown', function(e) {
+                  keysDown[e.keyCode] = true;
+          });
+          window.addEventListener('keyup', function(e) {
+                delete keysDown[e.keyCode];
+          });
 
-  Physics.util.ticker.subscribe(function( time, dt ){
-    
-      world.step( time );
-  });
+        //send keypress to server  
+        function keyUpdate(){
+              var vel = 0.01;
+              if (38 in keysDown) {
+                 sendKeyPress(38);          
+              }
+              if (37 in keysDown) {
+                 sendKeyPress(37);
+              }
+              if (39 in keysDown) {
+                 sendKeyPress(39);
+              }
+              if (77 in keysDown) {
+                 sendKeyPress(77);
+              }
+          }
+          //keyUpdate function iteration after every 200 ms.
+          setInterval(keyUpdate,200);
+  </script>
+  <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
+  <script>
+         var room = "";
+         var seq = 0;
+         var socket = io.connect('http://127.0.0.1:8080');
+         socket.on('news', function (data) {
+           console.log(data);
+           socket.emit('my other event', { my: 'data' });
 
-  // start the ticker
-  Physics.util.ticker.start();
+           socket.on('bodies', function(data){
+             //console.log(data);
 
-  });
+             for (var i = ph._bodies.length - 1; i >= 0; i--) {
+               ph.removeBody(ph._bodies[i]);
+             };
+
+             for(var i = 0; i < data.length; i++){
+                      var img = new Image();
+                      img.src = "img/" + data[i].gameType + '.jpg';
+                      var t = Physics.body('circle', {
+                      x: data[i].x, // x-coordinate
+                      y: data[i].y, // y-coordinate
+                      vx: 0, // velocity in x-direction
+                      vy: 0, // velocity in y-direction
+                      radius:data[i].radius,
+                      view: img
+                    });
+                      t.state.angular.pos = data[i].angle;
+                      ph.addBody(t);                      
+                }
+           });
+         });
+
+         socket.on('joined', function (data) {
+           console.log(data,"joined");
+           room = data.name;
+         });
+
+         function sendKeyPress(key){
+           socket.emit("comm", {name : room, event : "key", data : { key : key, seq : ++seq }})
+         }
+ </script>
+</html>
+=======
+  </body>
+  <script>
+  var keysDown = {};
   
-    window.addEventListener('keydown', function(e) {
+  window.addEventListener('keydown', function(e) {
             keysDown[e.keyCode] = true;
     });
     window.addEventListener('keyup', function(e) {
@@ -81,93 +155,30 @@
     //keyUpdate function iteration after every 200 ms.
     setInterval(keyUpdate,200);
   </script>
-  <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
-  <script>
-     var room = "";
-     var seq = 0;
-     var socket = io.connect('http://127.0.0.1:8080');
-     socket.on('news', function (data) {
-       console.log(data);
-       socket.emit('my other event', { my: 'data' });
+<script src="http://192.168.2.7:8080/socket.io/socket.io.js"></script>
+<script>
+  var room = "";
+  var seq = 0;
+  var socket = io.connect('http://192.168.2.7:8080');
+  socket.on('news', function (data) {
+    console.log(data);
+    socket.emit('my other event', { my: 'data' });
 
-       socket.on('bodies', function(data){
-         //console.log(data);
+    socket.on('bodies', function(data){
+      console.log(data)
+    });
 
-         for (var i = ph._bodies.length - 1; i >= 0; i--) {
-           ph.removeBody(ph._bodies[i]);
-         };
+  });
 
-         for(var i = 0; i < data.length; i++){
-            switch(data[i].gameType)
-            {
-              case "ship1":
-                      var ship1 = Physics.body('circle', {
-                            x: data[i].state.pos._[0], // x-coordinate
-                            y: data[i].state.pos._[1], // y-coordinate
-                            vx: 0, // velocity in x-direction
-                            vy: 0, // velocity in y-direction
-                            radius:data[i].options.radius
-                      })
-                      ship1.state.angular.pos = data[i].state.angular.pos;
-                      ph.addBody(ship1);
-                      break;
-              case "ship2":
-                      var ship2 = Physics.body('circle', {
-                            x: data[i].state.pos._[0], // x-coordinate
-                            y: data[i].state.pos._[1], // y-coordinate
-                            vx: 0, // velocity in x-direction
-                            vy: 0, // velocity in y-direction
-                            radius:data[i].options.radius
-                      })
-                      ship2.state.angular.pos = data[i].state.angular.pos;
-                      ph.addBody(ship2);
-                      break;
-              case "laser-ship1":
-                      ph.addBody(
-                          Physics.body('circle', {
-                            x: data[i].state.pos._[0], // x-coordinate
-                            y: data[i].state.pos._[1], // y-coordinate
-                            vx: 0, // velocity in x-direction
-                            vy: 0, // velocity in y-direction
-                            radius:data[i].options.radius
-                          })
-                        ); 
-                      break;
-              case "laser-ship2":
-                      ph.addBody(
-                          Physics.body('circle', {
-                            x: data[i].state.pos._[0], // x-coordinate
-                            y: data[i].state.pos._[1], // y-coordinate
-                            vx: 0, // velocity in x-direction
-                            vy: 0, // velocity in y-direction
-                            radius:data[i].options.radius
-                          })
-                        ); 
-                      break;
-              case "debris":
-                      ph.addBody(
-                          Physics.body('circle', {
-                            x: data[i].state.pos._[0], // x-coordinate
-                            y: data[i].state.pos._[1], // y-coordinate
-                            vx: 0, // velocity in x-direction
-                            vy: 0, // velocity in y-direction
-                            radius:data[i].options.radius
-                          })
-                        ); 
-                      break;
-            }
-         }
-       });
+  socket.on('joined', function (data) {
+    console.log(data);
+    room = data.name;
+  });
 
-     });
 
-     socket.on('joined', function (data) {
-       console.log(data,"joined");
-       room = data.name;
-     });
+  function sendKeyPress(key){
+    socket.emit("comm", {name : room, event : "key", data : { key : key, seq : ++seq }})
+  }
 
-     function sendKeyPress(key){
-       socket.emit("comm", {name : room, event : "key", data : { key : key, seq : ++seq }})
-     }
- </script>
-</html>
+</script>
+>>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
