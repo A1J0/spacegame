@@ -13,9 +13,9 @@
 		<canvas id="viewport" width = "960" height = "580"></canvas>
 	</body>
 	<script>
- var canvas = document.getElementById('viewport');
- var ctx = canvas.getContext('2d');
- var keysDown = {};
+     var canvas = document.getElementById('viewport');
+     var ctx = canvas.getContext('2d');
+     var keysDown = {};
 
  var laser = function(x,y,s_vx,s_vy){
 
@@ -41,8 +41,6 @@ var ship = function(x,y){
       });
  }
 
-
-
  var ph = Physics(function(world){
 
    Physics.body('ship','circle', function(parent){
@@ -67,6 +65,7 @@ var ship = function(x,y){
         if (!world){
             return self;
         }
+
         var scratch = Physics.scratchpad();
         var rnd = scratch.vector();
         var pos = this.state.pos;
@@ -100,7 +99,7 @@ var ship = function(x,y){
                 debris.push( d );
        }
 
-       // remove the debris pulse in 600ms
+       // remove the debris pulse in 1500ms
         setTimeout(function(){
           for (var i = 0, l = debris.length; i < l; ++i)
           {
@@ -141,7 +140,6 @@ var ship = function(x,y){
           // set a custom property for collision purposes
           laser.gameType = 'laser-'+self.gameType;
           
-
           // remove the laser pulse in 600ms
           setTimeout(function(){
               world.removeBody( laser );
@@ -205,21 +203,19 @@ var ship = function(x,y){
 
           if((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "laser-ship1") || (data.bodyA.gameType == "laser-ship1" && data.bodyB.gameType == "ship2"))
           {
-            console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
+            //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
             var w = data.bodyA._world;
             w.ship2.destroy();
           }
 
           if((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "laser-ship2") || (data.bodyA.gameType == "laser-ship2" && data.bodyB.gameType == "ship1"))
           {
-            console.log("SHIP1")
+            //console.log("SHIP1")
             var w = data.bodyA._world;
             w.ship1.destroy();
           }
 
       });
-
-
 
   world.add( Physics.behavior('body-collision-detection') );
   world.add(Physics.behavior('sweep-prune'));
@@ -232,12 +228,12 @@ var ship = function(x,y){
   world.add(this.ship2);
   // ensure objects bounce when edge collision is detected
   world.add( Physics.behavior('body-impulse-response') );
-  // add some gravity
+  // we don't want gravity
   world.add( Physics.behavior('constant-acceleration', {
     acc: { x : 0, y: 0 }
   }) );
  
-  // subscribe to ticker to advance the simulation
+  // subscribe to ticker to advance the simulation (GameLoop)
   Physics.util.ticker.subscribe(function( time, dt ){
       world.step( time );
   });
@@ -275,8 +271,7 @@ window.addEventListener('keydown', function(e) {
           //angle change towards right
           ph.ship2.turnl();
         }
-        if (38 in keysDown) {
-          
+        if (38 in keysDown) {          
           ph.ship1.thrust();
         }
         if (37 in keysDown) {
@@ -293,12 +288,12 @@ window.addEventListener('keydown', function(e) {
         }
 
     }
-    //keyUpdate function iteration after every 30 ms.
+    //keyUpdate function iteration after every 200 ms.
     setInterval(keyUpdate,200);
 	</script>
-  <script src="http://192.168.2.7:8080/socket.io/socket.io.js"></script>
+  <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
 <script>
-  var socket = io.connect('http://192.168.2.7:8080');
+  var socket = io.connect('http://127.0.0.1:8080');
   socket.on('news', function (data) {
     console.log(data);
     socket.on('joined', function(data){
@@ -316,15 +311,18 @@ window.addEventListener('keydown', function(e) {
         obj.gameType = ph._bodies[i].gameType;
         objs.push(obj);
       };
+      // sending the data to client
       socket.emit("comm", {name : room, event : "bodies", data : objs})
-    }, 200);
+    }, 100);
 
   });
   socket.on('key', function (data) {
     switch(data.key) {
+      
       case 77:
            ph.ship2.shoot(); 
         break;
+
       case 39:
            ph.ship2.turnl();
         break;
