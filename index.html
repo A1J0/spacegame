@@ -13,32 +13,22 @@
 		<canvas id="viewport" width = "960" height = "580"></canvas>
 	</body>
 	<script>
-<<<<<<< HEAD
       var canvas = document.getElementById('viewport');
       var ctx = canvas.getContext('2d');
       var keysDown = {};
       var ship1Img = new Image();
       ship1Img.src = "img/ship.jpg"
+      
       var laser = function(x,y,s_vx,s_vy){
         return Physics.body('circle', {
-=======
- var canvas = document.getElementById('viewport');
- var ctx = canvas.getContext('2d');
- var keysDown = {};
-
- var laser = function(x,y,s_vx,s_vy){
-
-  return Physics.body('circle', {
-
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
-        x: x, // x-coordinate
-        y: y, // y-coordinate
-        vx: vx, // velocity in x-direction
-        vy: vy, // velocity in y-direction
-        restitution: 0.2,
-        radius: 5
-        });
-      }
+            x: x, // x-coordinate
+            y: y, // y-coordinate
+            vx: vx, // velocity in x-direction
+            vy: vy, // velocity in y-direction
+            restitution: 0.2,
+            radius: 5
+            });
+          }
 
       var ship = function(x,y){
       return Physics.body('ship', {
@@ -148,11 +138,7 @@
           });
           // set a custom property for collision purposes
           laser.gameType = 'laser-'+self.gameType;
-          
-<<<<<<< HEAD
-=======
 
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
           // remove the laser pulse in 600ms
           setTimeout(function(){
               world.removeBody( laser );
@@ -164,42 +150,24 @@
       }
    });
 
-<<<<<<< HEAD
         var viewWidth = canvas.width;
         var viewHeight = canvas.height;
-              
+            
         var renderer = Physics.renderer('canvas', {
-          el: 'viewport',
-          width: viewWidth,
-          height: viewHeight,
-          meta: false, // don't display meta data
-          styles: {
-              // set colors for the circle bodies
-              'circle' : {
-                  strokeStyle: 'hsla(60, 37%, 17%, 1)',
-                  lineWidth: 1,
-                  fillStyle: 'hsla(60, 37%, 57%, 0.8)',
-                  angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
-                }
-=======
-  var viewWidth = canvas.width;
-  var viewHeight = canvas.height;
-        
-  var renderer = Physics.renderer('canvas', {
-    el: 'viewport',
-    width: viewWidth,
-    height: viewHeight,
-    meta: false, // don't display meta data
-    styles: {
-        // set colors for the circle bodies
-        'circle' : {
-            strokeStyle: 'hsla(60, 37%, 17%, 1)',
-            lineWidth: 1,
-            fillStyle: 'hsla(60, 37%, 57%, 0.8)',
-            angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
+        el: 'viewport',
+        width: viewWidth,
+        height: viewHeight,
+        meta: false, // don't display meta data
+        styles: {
+            // set colors for the circle bodies
+            'circle' : {
+                strokeStyle: 'hsla(60, 37%, 17%, 1)',
+                lineWidth: 1,
+                fillStyle: 'hsla(60, 37%, 57%, 0.8)',
+                angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
+            }
         }
-    }
-  });
+      });
   // add the renderer
   world.add( renderer );
   // render on each step
@@ -214,7 +182,6 @@
       restitution: 0.99,
       cof: 0.1
   }));
-
       // If you want to subscribe to collision pairs
       // emit an event for each collision pair
       world.subscribe('collisions:detected', function( data ){
@@ -226,39 +193,10 @@
                   bodyA: c.bodyA,
                   bodyB: c.bodyB
               });
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
+
           }
         });
-          // add the renderer
-          world.add( renderer );
-          // render on each step
-          world.subscribe('step', function(){
-            world.render();
-          });
-          // bounds of the window
-          var viewportBounds = Physics.aabb(0, 0, viewWidth, viewHeight);
-          // constrain objects to these bounds
-          world.add(Physics.behavior('edge-collision-detection', {
-              aabb: viewportBounds,
-              restitution: 0.99,
-              cof: 0.1
-          }));
-          // If you want to subscribe to collision pairs
-          // emit an event for each collision pair
-          world.subscribe('collisions:detected', function( data ){
-              var c;
-              for (var i = 0, l = data.collisions.length; i < l; i++){
-                  c = data.collisions[ i ];
-                  world.publish({
-                      topic: 'collision-pair',
-                      bodyA: c.bodyA,
-                      bodyB: c.bodyB
-                  });
-              }
-          });
-
-<<<<<<< HEAD
-          // subscribe to collision pair
+         // subscribe to collision pair
           world.subscribe('collision-pair', function( data ){
 
               if((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "laser-ship1") || (data.bodyA.gameType == "laser-ship1" && data.bodyB.gameType == "ship2"))
@@ -276,24 +214,6 @@
               }
 
           });
-=======
-      // subscribe to collision pair
-      world.subscribe('collision-pair', function( data ){
-
-          if((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "laser-ship1") || (data.bodyA.gameType == "laser-ship1" && data.bodyB.gameType == "ship2"))
-          {
-            console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
-            var w = data.bodyA._world;
-            w.ship2.destroy();
-          }
-
-          if((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "laser-ship2") || (data.bodyA.gameType == "laser-ship2" && data.bodyB.gameType == "ship1"))
-          {
-            console.log("SHIP1")
-            var w = data.bodyA._world;
-            w.ship1.destroy();
-          }
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
 
           world.add( Physics.behavior('body-collision-detection') );
           world.add(Physics.behavior('sweep-prune'));
@@ -312,15 +232,14 @@
           world.add( Physics.behavior('constant-acceleration', {
             acc: { x : 0, y: 0 }
           }) );
- 
+
         // subscribe to ticker to advance the simulation (GameLoop)
         Physics.util.ticker.subscribe(function( time, dt ){
             world.step( time );
         });
         // start the ticker
         Physics.util.ticker.start();
-      });
-
+        });
           window.addEventListener('keydown', function(e) {
                       keysDown[e.keyCode] = true;
               });   
@@ -412,60 +331,12 @@
                     ph.ship2.thrust();
                 break;
 
-<<<<<<< HEAD
               case 37:
                     ph.ship2.turnr();
                 break;
             }
           });
-=======
-    }
     //keyUpdate function iteration after every 30 ms.
     setInterval(keyUpdate,200);
-	</script>
-  <script src="http://192.168.2.7:8080/socket.io/socket.io.js"></script>
-<script>
-  var socket = io.connect('http://192.168.2.7:8080');
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.on('joined', function(data){
-      console.log(data.name);
-      room = data.name
-    });
-    socket.emit('join', { });
-
-    setInterval(function(){
-      var objs = [];
-      for (var i = ph._bodies.length - 1; i >= 0; i--) {
-        var obj = {};
-        obj.state = ph._bodies[i].state;
-        obj.options = ph._bodies[i].options;
-        obj.gameType = ph._bodies[i].gameType;
-        objs.push(obj);
-      };
-      socket.emit("comm", {name : room, event : "bodies", data : objs})
-    }, 200);
-
-  });
-  socket.on('key', function (data) {
-    switch(data.key) {
-      case 77:
-           ph.ship2.shoot(); 
-        break;
-      case 39:
-           ph.ship2.turnl();
-        break;
-
-      case 38:
-            ph.ship2.thrust();
-        break;
-
-      case 37:
-            ph.ship2.turnr();
-        break;
-    }
-  });
-
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
-</script>
+	</script>  
 </html>

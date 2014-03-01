@@ -10,7 +10,6 @@
   </style>
   </head>
   <body>
-<<<<<<< HEAD
     <canvas id="viewport" width = "960" height = "580"></canvas>
   </body>
   <script>
@@ -123,62 +122,3 @@
            socket.emit("comm", {name : room, event : "key", data : { key : key, seq : ++seq }})
          }
  </script>
-</html>
-=======
-  </body>
-  <script>
-  var keysDown = {};
-  
-  window.addEventListener('keydown', function(e) {
-            keysDown[e.keyCode] = true;
-    });
-    window.addEventListener('keyup', function(e) {
-          delete keysDown[e.keyCode];
-    });
-
-  //send keypress to server  
-  function keyUpdate(){
-        var vel = 0.01;
-        if (38 in keysDown) {
-           sendKeyPress(38);          
-        }
-        if (37 in keysDown) {
-           sendKeyPress(37);
-        }
-        if (39 in keysDown) {
-           sendKeyPress(39);
-        }
-        if (77 in keysDown) {
-           sendKeyPress(77);
-        }
-    }
-    //keyUpdate function iteration after every 200 ms.
-    setInterval(keyUpdate,200);
-  </script>
-<script src="http://192.168.2.7:8080/socket.io/socket.io.js"></script>
-<script>
-  var room = "";
-  var seq = 0;
-  var socket = io.connect('http://192.168.2.7:8080');
-  socket.on('news', function (data) {
-    console.log(data);
-    socket.emit('my other event', { my: 'data' });
-
-    socket.on('bodies', function(data){
-      console.log(data)
-    });
-
-  });
-
-  socket.on('joined', function (data) {
-    console.log(data);
-    room = data.name;
-  });
-
-
-  function sendKeyPress(key){
-    socket.emit("comm", {name : room, event : "key", data : { key : key, seq : ++seq }})
-  }
-
-</script>
->>>>>>> ddddb20ae917617738b2cdd7a2fd8e2c1769385a
