@@ -30,20 +30,18 @@
     ship1Img.src = "img/ship1.png"
     var ship2Img = new Image();
     ship2Img.src = "img/ship2.png"
-    var laserImg = new Image();
-    laserImg.src = "img/laser-ship1.png"
+    var laser1Img = new Image();
+    laser1Img.src = "img/laser-ship1.png"
     var laser2Img = new Image();
     laser2Img.src = "img/laser-ship2.png"
     var asteroidImg = new Image();
     asteroidImg.src = "img/asteroid.png"
-
-    var starfield = new Image();
-
-    starfield.onload = function(){
-        ctx.drawImage(starfield, 150, 150);
+    var immuneImg = new Image();
+    immuneImg.src = "img/shield.png"
+    var strikeImg = new Image();
+    strikeImg.src = "img/strike.png"
     };
-    starfield.src = 'img/starfield.jpg'
-
+    
     var laser = function (x, y, s_vx, s_vy) {
         return Physics.body('circle', {
             x: x, // x-coordinate
@@ -51,7 +49,7 @@
             vx: vx, // velocity in x-direction
             vy: vy, // velocity in y-direction
             restitution: 0.2,
-            radius: 5
+            radius: 3
         });
     }
 
@@ -62,7 +60,7 @@
             vx: 0.0, // velocity in x-direction
             vy: 0, // velocity in y-direction
             restitution: 1,
-            radius: 20
+            radius: 12
         });
     }
 
@@ -73,7 +71,7 @@
             vx: 0.01 + (Math.random() * 0.04),
             vy: 0.01 + (Math.random() * 0.04),
             restitution: 0.01,
-            radius: 40,
+            radius: 30,
             mass: 100,
             angularVelocity: 0.002
         });
@@ -81,8 +79,8 @@
 
     var immunePower = function () {
         return Physics.body('circle', {
-            x: 1 * (Math.random() * 600),
-            y: 1 * (Math.random() * 400),
+            x: Math.random() * 800,
+            y: Math.random() * 500,
             radius: 10,
             mass: 100
         });
@@ -90,8 +88,8 @@
 
     var strikePower = function () {
         return Physics.body('circle', {
-            x: 1 * (Math.random() * 600),
-            y: 1 * (Math.random() * 400),
+            x: Math.random() * 600,
+            y: Math.random() * 400,
             radius: 10,
             mass: 100
         });
@@ -380,7 +378,7 @@
                 immune = undefined;
             }, 10000);
             immune.gameType = 'immunity';
-            immune.view = laserImg;
+            immune.view = immuneImg;
             world.add(immune);
         }, 30000)
 
@@ -392,7 +390,7 @@
                 strike = undefined;
             }, 10000);
             strike.gameType = 'striking';
-            strike.view = laser2Img;
+            strike.view = strikeImg;
             world.add(strike);
         }, 50000)
 
