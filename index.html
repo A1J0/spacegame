@@ -464,7 +464,8 @@
         console.log(data);
         socket.on('joined', function (data) {
             console.log(data.name);
-            room = data.name
+            room = data.name;
+            document.getElementById("gameId").innerHTML = room;
         });
         socket.emit('join', {});
 
@@ -512,4 +513,5 @@
     setInterval(keyUpdate, 200);
 </script>
 
+<div style="position:absolute; bottom:5px" id="gameId" class="well">Acquiring Game ID...</div>
 </html>
