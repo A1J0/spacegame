@@ -20,7 +20,7 @@
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="600px" height="450px"></canvas>
+    <canvas id="gameCanvas"></canvas>
 </body>
 <script>
     var gameCanvas = document.getElementById('gameCanvas');
@@ -199,11 +199,12 @@
                     // relative to the ship's current velocity
                     var laserImg = new Image();
                     laserImg.src = "img/laser-" + this.gameType + ".png";
+                    var speed = ( this.striking == true ) ? 4 : 2;
                     var laser = Physics.body('circle', {
                         x: this.state.pos.get(0) + r * cos,
                         y: this.state.pos.get(1) + r * sin,
-                        vx: ((0.5 + this.state.vel.get(0)) * cos) * 2,
-                        vy: ((0.5 + this.state.vel.get(1)) * sin) * 2,
+                        vx: ((0.5 + this.state.vel.get(0)) * cos) * speed,
+                        vy: ((0.5 + this.state.vel.get(1)) * sin) * speed,
                         radius: 5,
                         view: laserImg
                     });
@@ -221,8 +222,8 @@
             }
         });
 
-        var newWidth = window.innerWidth;
-        var newHeight = window.innerHeight;
+        var newWidth = 850;
+        var newHeight = 400;
 
         var renderer = Physics.renderer('canvas', {
             el: 'gameCanvas',
@@ -339,11 +340,11 @@
         world.add(Physics.behavior('body-collision-detection'));
         world.add(Physics.behavior('sweep-prune'));
         // add a circle
-        this.ship1 = new ship(50, 50);
+        this.ship1 = new ship(100, 100);
         this.ship1.gameType = 'ship1';
         this.ship1.view = ship1Img;
         world.add(this.ship1);
-        this.ship2 = new ship(500, 500);
+        this.ship2 = new ship(350, 400);
         this.ship2.gameType = 'ship2';
         this.ship2.view = ship2Img;
         world.add(this.ship2);
