@@ -11,7 +11,6 @@
         }
         body {
             width: 100%;
-            background-image: url('img/starfield.jpg');
         }
         #gameCanvas {
             width: 100%;
@@ -20,7 +19,9 @@
 </head>
 
 <body>
-    <canvas id="gameCanvas"></canvas>
+	<div style="width:100%;background-image: url('img/starfield.jpg');">
+		<canvas id="gameCanvas"></canvas>
+	</div>
 </body>
 <script>
     var gameCanvas = document.getElementById('gameCanvas');
@@ -39,7 +40,12 @@
     var immuneImg = new Image();
     immuneImg.src = "img/immunity.png"
     var strikeImg = new Image();
+<<<<<<< HEAD
     strikeImg.src = "img/striking.png"
+=======
+    strikeImg.src = "img/strike.png"
+    
+>>>>>>> 4ecf0edfca7b7be7afd631cec249f8f668d73562
     
     var laser = function (x, y, s_vx, s_vy) {
         return Physics.body('circle', {
