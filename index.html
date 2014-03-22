@@ -41,10 +41,14 @@
     var asteroidImg = new Image();
     asteroidImg.src = "img/asteroid.png"
     var immuneImg = new Image();
-    immuneImg.src = "img/shield.png"
+    immuneImg.src = "img/immunity.png"
     var strikeImg = new Image();
+<<<<<<< HEAD
+    strikeImg.src = "img/striking.png"
+=======
     strikeImg.src = "img/strike.png"
     
+>>>>>>> 4ecf0edfca7b7be7afd631cec249f8f668d73562
     
     var laser = function (x, y, s_vx, s_vy) {
         return Physics.body('circle', {
@@ -64,7 +68,7 @@
             vx: 0.0, // velocity in x-direction
             vy: 0, // velocity in y-direction
             restitution: 1,
-            radius: 12
+            radius: 15
         });
     }
 
