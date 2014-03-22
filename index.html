@@ -11,10 +11,10 @@
         }
         body {
             width: 100%;
+            background-image: url('img/starfield.jpg');
         }
         #gameCanvas {
             width: 100%;
-            background-color: grey;
         }
     </style>
 </head>
@@ -36,6 +36,13 @@
     laser2Img.src = "img/laser-ship2.png"
     var asteroidImg = new Image();
     asteroidImg.src = "img/asteroid.png"
+
+    var starfield = new Image();
+
+    starfield.onload = function(){
+        ctx.drawImage(starfield, 150, 150);
+    };
+    starfield.src = 'img/starfield.jpg'
 
     var laser = function (x, y, s_vx, s_vy) {
         return Physics.body('circle', {
@@ -61,7 +68,7 @@
 
     var asteroid = function () {
         return Physics.body('circle', {
-            x: 1 + (Math.random() * 590),
+            x: 1 + (Math.random() * 900),
             y: 1,
             vx: 0.01 + (Math.random() * 0.04),
             vy: 0.01 + (Math.random() * 0.04),
@@ -76,7 +83,6 @@
         return Physics.body('circle', {
             x: 1 * (Math.random() * 600),
             y: 1 * (Math.random() * 400),
-            restitution: 0.01,
             radius: 10,
             mass: 100
         });
@@ -86,7 +92,6 @@
         return Physics.body('circle', {
             x: 1 * (Math.random() * 600),
             y: 1 * (Math.random() * 400),
-            restitution: 0.01,
             radius: 10,
             mass: 100
         });
@@ -104,11 +109,16 @@
                     this.state.angular.vel = 0;
                 },
                 immunity: false,
+                striking: false,
                 powerup: function(power){
 
                     switch(power){
                         case "immune":
                             this.immunity = true;
+                        break;
+
+                        case "strike":
+                            this.striking = true;
                         break;
                     }
 
@@ -226,7 +236,7 @@
                 'circle': {
                     strokeStyle: 'hsla(60, 37%, 17%, 1)',
                     lineWidth: 1,
-                    fillStyle: 'hsla(60, 37%, 57%, 0.8)',
+                    fillStyle: 'hsla(200, 37%, 57%, 0.8)',
                     angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
                 }
             }
@@ -306,6 +316,26 @@
                 }, 10000);
             }
 
+            if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "strike") || (data.bodyA.gameType == "strike" && data.bodyB.gameType == "ship2")) {
+                //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
+                var w = data.bodyA._world;
+                w.ship2.powerup("strike");
+                setTimeout(function(w){
+                    console.log(w);
+                    w.ship2.striking = false;
+                }, 10000);
+            }
+
+            if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "strike") || (data.bodyA.gameType == "strike" && data.bodyB.gameType == "ship1")) {
+                //console.log("SHIP1")
+                var w = data.bodyA._world;
+                w.ship1.powerup("strike");
+                setTimeout(function(w){
+                    console.log(w);
+                    w.ship1.striking = false;
+                }, 10000);
+            }
+
         });
 
         world.add(Physics.behavior('body-collision-detection'));
@@ -353,6 +383,18 @@
             immune.view = laserImg;
             world.add(immune);
         }, 30000)
+
+        // adding strike power every 50 seconds
+        setInterval(function () {
+            var strike = new strikePower();
+            setTimeout(function () {
+                world.removeBody(strike);
+                strike = undefined;
+            }, 10000);
+            strike.gameType = 'striking';
+            strike.view = laser2Img;
+            world.add(strike);
+        }, 50000)
 
 
         // subscribe to ticker to advance the simulation (GameLoop)
