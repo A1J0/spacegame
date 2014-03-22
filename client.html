@@ -14,13 +14,13 @@
         }
         #gameCanvas {
             width: 100%;
-            background-color: grey;
+            background-image: url('img/starfield.jpg');
         }
     </style>
 </head>
 
 <body>
-    <canvas id="gameCanvas" width="600px" height="450px"></canvas>
+    <canvas id="gameCanvas"></canvas>
 </body>
 <script>
     var canvas = document.getElementById('gameCanvas');
@@ -28,8 +28,8 @@
     var keysDown = {};
 
     var ph = Physics(function (world) {
-        var newWidth = window.innerWidth;
-        var newHeight = window.innerHeight;
+        var newWidth = 850;
+        var newHeight = 400;
 
         var renderer = Physics.renderer('canvas', {
             el: 'gameCanvas',
@@ -41,7 +41,7 @@
                 'circle': {
                     strokeStyle: 'hsla(60, 37%, 17%, 1)',
                     lineWidth: 1,
-                    fillStyle: 'hsla(60, 37%, 57%, 0.8)',
+                    fillStyle: 'hsla(200, 37%, 57%, 0.8)',
                     angleIndicator: 'hsla(60, 37%, 17%, 0.4)'
                 }
             }
@@ -110,15 +110,19 @@
 
             for (var i = 0; i < data.length; i++) {
                 var img = new Image();
-                img.src = "img/" + data[i].gameType + '.jpg';
-                var t = Physics.body('circle', {
+                var options = {
                     x: data[i].x, // x-coordinate
                     y: data[i].y, // y-coordinate
                     vx: 0, // velocity in x-direction
                     vy: 0, // velocity in y-direction
-                    radius: data[i].radius,
-                    view: img
-                });
+                    radius: data[i].radius
+                };
+                if(data[i].gameType != "debris"){
+                    img.src = "img/" + data[i].gameType + '.png';
+                    options.view = img;
+                }
+                var t = Physics.body('circle',options);
+
                 t.state.angular.pos = data[i].angle;
                 ph.addBody(t);
             }
