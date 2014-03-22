@@ -11,7 +11,6 @@
         }
         body {
             width: 100%;
-            background-image: url('img/starfield.jpg');
         }
         #gameCanvas {
             width: 100%;
@@ -20,7 +19,9 @@
 </head>
 
 <body>
-    <canvas id="gameCanvas"></canvas>
+	<div style="width:100%;background-image: url('img/starfield.jpg');">
+		<canvas id="gameCanvas"></canvas>
+	</div>
 </body>
 <script>
     var gameCanvas = document.getElementById('gameCanvas');
