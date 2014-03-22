@@ -2,8 +2,10 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
     <script src="physicsjs-full-0.5.3.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -21,6 +23,39 @@
 
 <body>
     <canvas id="gameCanvas"></canvas>
+    <div class="modal fade bs-example-modal-sm gamed" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Enter Game ID</h4>
+            </div>
+          <div class="modal-body">
+            <div class="row">
+          
+          <div class="input-group">
+          <input id="gameidtxt" type="text" class="form-control">
+            <span class="input-group-btn">
+                <button id="gameidbtn" class="btn btn-default" type="button">Go!</button>
+            </span>
+          </div><!-- /input-group -->
+          
+        </div>
+          </div>
+      </div>
+    </div>
+</div>
+    <script>
+        $(".gamed").modal('show');
+
+        $("#gameidbtn").click(function(){
+            var gid = $("#gameidtxt").val();
+            console.log(gid);
+            socket.emit("join",{name:gid});
+            $(".gamed").modal('hide');
+        });
+    </script>
 
 <script>
     var canvas = document.getElementById('gameCanvas');
@@ -145,14 +180,6 @@
         })
     }
 </script>
-
-<div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="false">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <h3>Enter Game ID</h3>
-    </div>
-  </div>
-</div>
 
 </body>
 </html>
