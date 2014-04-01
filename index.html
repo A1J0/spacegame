@@ -320,44 +320,74 @@
                 $("#myResult").html("Blue ship win..!!!");
             }
 
-            if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "immune") || (data.bodyA.gameType == "immune" && data.bodyB.gameType == "ship2")) {
+            if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "immunity") || (data.bodyA.gameType == "immunity" && data.bodyB.gameType == "ship2")) {
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.powerup("immune");
                 setTimeout(function(w){
                     console.log(w);
-                    w.ship2.immunity = false;
+                    ph.ship2.immunity = false;
                 }, 10000);
+
+                if(data.bodyA.gameType == "immunity"){
+                    console.log("BODYA");
+                    w.removeBody(data.bodyA);
+                }
+                else{
+                    console.log("BODYB");
+                    w.removeBody(data.bodyB);
+                }
             }
 
-            if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "immune") || (data.bodyA.gameType == "immune" && data.bodyB.gameType == "ship1")) {
-                //console.log("SHIP1")
+            if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "immunity") || (data.bodyA.gameType == "immunity" && data.bodyB.gameType == "ship1")) {
+                console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.powerup("immune");
                 setTimeout(function(w){
-                    console.log(w);
-                    w.ship1.immunity = false;
+                    ph.ship1.immunity = false;
                 }, 10000);
+
+                if(data.bodyA.gameType == "immunity"){
+                    w.removeBody(data.bodyA);
+                }
+                else{
+                    w.removeBody(data.bodyB);
+                }
+
             }
 
-            if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "strike") || (data.bodyA.gameType == "strike" && data.bodyB.gameType == "ship2")) {
+            if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "striking") || (data.bodyA.gameType == "striking" && data.bodyB.gameType == "ship2")) {
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.powerup("strike");
                 setTimeout(function(w){
                     console.log(w);
-                    w.ship2.striking = false;
+                    ph.ship2.striking = false;
                 }, 10000);
+
+                if(data.bodyA.gameType == "striking"){
+                    w.removeBody(data.bodyA);
+                }
+                else{
+                    w.removeBody(data.bodyB);
+                }
             }
 
-            if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "strike") || (data.bodyA.gameType == "strike" && data.bodyB.gameType == "ship1")) {
+            if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "striking") || (data.bodyA.gameType == "striking" && data.bodyB.gameType == "ship1")) {
                 //console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.powerup("strike");
                 setTimeout(function(w){
                     console.log(w);
-                    w.ship1.striking = false;
+                    ph.ship1.striking = false;
                 }, 10000);
+
+                if(data.bodyA.gameType == "striking"){
+                    w.removeBody(data.bodyA);
+                }
+                else{
+                    w.removeBody(data.bodyB);
+                }
             }
 
         });
