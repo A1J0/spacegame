@@ -189,5 +189,44 @@
     }
 </script>
 
+
+<div style="position:absolute; bottom:3px; left:0px">
+    <div>
+        <button id="controlThrust" type="button" class="btn btn-primary">THRUST</button>
+    </div>
+    <div style="margin:3px 0 0 0">
+        <button id="controlLeft" type="button" class="btn btn-primary">LEFT</button>
+    </div>
+</div>
+
+<div style="position:absolute; bottom:3px; right:0px">
+    <div>
+        <button id="controlShoot" type="button" class="btn btn-primary">SHOOT</button>
+    </div>
+    <div style="margin:3px 0 0 0">
+        <button id="controlRight" type="button" class="btn btn-primary">RIGHT</button>
+    </div>
+</div>
+
+<script>
+
+    $("#controlThrust").click(function(e){
+        sendKeyPress(38);
+    });
+
+    $("#controlShoot").click(function(e){
+        sendKeyPress(77);
+    });
+
+    $("#controlRight").click(function(e){
+        sendKeyPress(37);
+    });
+
+    $("#controlLeft").click(function(e){
+        sendKeyPress(39);
+    });
+
+</script>
+
 </body>
 </html>

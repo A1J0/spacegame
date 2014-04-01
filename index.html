@@ -467,6 +467,7 @@
     window.addEventListener('keydown', function (e) {
         keysDown[e.keyCode] = true;
     });
+
     window.addEventListener('keyup', function (e) {
         // //ship2 stop angular movement when the key is released
         // if(e.keyCode == 37 || e.keyCode == 39)
@@ -586,7 +587,48 @@
     });
     //keyUpdate function iteration after every 30 ms.
     setInterval(keyUpdate, 200);
+
+
 </script>
 
-<div style="position:absolute; bottom:5px" id="gameId" class="well">Acquiring Game ID...</div>
+<div style="position:absolute; top:5px" id="gameId" class="well">Acquiring Game ID...</div>
+
+<div style="position:absolute; bottom:3px; left:0px">
+    <div>
+        <button id="controlThrust" type="button" class="btn btn-primary">THRUST</button>
+    </div>
+    <div style="margin:3px 0 0 0">
+        <button id="controlLeft" type="button" class="btn btn-primary">LEFT</button>
+    </div>
+</div>
+
+<div style="position:absolute; bottom:3px; right:0px">
+    <div>
+        <button id="controlShoot" type="button" class="btn btn-primary">SHOOT</button>
+    </div>
+    <div style="margin:3px 0 0 0">
+        <button id="controlRight" type="button" class="btn btn-primary">RIGHT</button>
+    </div>
+</div>
+
+<script>
+
+    $("#controlThrust").click(function(e){
+        ph.ship1.thrust();
+    });
+
+    $("#controlShoot").click(function(e){
+        ph.ship1.shoot();
+    });
+
+    $("#controlRight").click(function(e){
+        ph.ship1.turnr();
+    });
+
+    $("#controlLeft").click(function(e){
+        ph.ship1.turnl();
+    });
+
+</script>
+
 </html>
