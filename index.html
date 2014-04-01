@@ -131,6 +131,7 @@
                 turnl: function () {
                     this.state.angular.vel = 0.2 * (Math.PI / 180) * 1;
                 },
+                isDead: false,
                 destroy: function () {
                     var self = this;
                     var world = this._world;
@@ -181,12 +182,16 @@
                     // add debris
                     world.add(debris);
                     // remove player
+                    this.isDead = true;
                     world.removeBody(this);
                     scratch.done();
                     return self;
                 },
 
                 shoot: function () {
+                    if(this.isDead)
+                        return;
+
                     this.state.angular.vel = 0;
                     var self = this;
                     var world = this._world;
@@ -490,6 +495,24 @@
 <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
 <script>
     var socket = io.connect('http://127.0.0.1:8080');
+
+    function sendEcho(){
+        var ts = new Date();
+        var pl = ts.getTime();
+        socket.on("recho",function(data){
+            console.log(data);
+            var t = data;
+            var s = (new Date()).getTime();
+            console.log("ECHO Successful timed at ", (s - t));
+        })
+
+        socket.emit("comm",{
+            name : room,
+            event : "echo",
+            data : pl
+        });
+    }
+
     socket.on('news', function (data) {
         console.log(data);
         socket.on('joined', function (data) {

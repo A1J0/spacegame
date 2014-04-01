@@ -136,6 +136,14 @@
             my: 'data'
         });
 
+        socket.on("echo",function(data){
+            socket.emit("comm", {
+                name: room,
+                event: "recho",
+                data: data
+            })
+        })
+
         socket.on('bodies', function (data) {
             //console.log(data);
 
