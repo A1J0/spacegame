@@ -26,6 +26,18 @@
 		<canvas id="gameCanvas"></canvas>
 	</div>
 </body>
+<div class="modal fade bs-example-modal-sm result" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title" id="myResult"></h4>
+            </div>
+          
+          </div><!-- /input-group -->
+          
+        </div>
+          </div>
 <script>
     var gameCanvas = document.getElementById('gameCanvas');
     var ctx = gameCanvas.getContext('2d');
@@ -276,12 +288,17 @@
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.destroy();
+                $(".result").modal('show');
+                $("#myResult").html("Red ship win..!!!");
+
             }
 
             if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "laser-ship2") || (data.bodyA.gameType == "laser-ship2" && data.bodyB.gameType == "ship1")) {
                 //console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.destroy();
+                $(".result").modal('show');
+                $("#myResult").html("Blue ship win..!!!");
             }
 
             // Collision for asteroid
@@ -293,6 +310,8 @@
                     return;
 
                 w.ship2.destroy();
+                 $(".result").modal('show');
+                 $("#myResult").html("Red ship win..!!!");
             }
 
             if ((data.bodyA.gameType == "ship1" && data.bodyB.gameType == "asteroid") || (data.bodyA.gameType == "asteroid" && data.bodyB.gameType == "ship1")) {
@@ -302,6 +321,8 @@
                     return;
 
                 w.ship1.destroy();
+                $(".result").modal('show');
+                $("#myResult").html("Blue ship win..!!!");
             }
 
             if ((data.bodyA.gameType == "ship2" && data.bodyB.gameType == "immunity") || (data.bodyA.gameType == "immunity" && data.bodyB.gameType == "ship2")) {
@@ -383,7 +404,7 @@
         this.ship1.gameType = 'ship1';
         this.ship1.view = ship1Img;
         world.add(this.ship1);
-        this.ship2 = new ship(350, 400);
+        this.ship2 = new ship(450, 300);
         this.ship2.gameType = 'ship2';
         this.ship2.view = ship2Img;
         world.add(this.ship2);
@@ -492,9 +513,10 @@
     //keyUpdate function iteration after every 200 ms.
     setInterval(keyUpdate, 200);
 </script>
-<script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
+<script src="http://192.168.2.4:8080/socket.io/socket.io.js"></script>
 <script>
-    var socket = io.connect('http://127.0.0.1:8080');
+
+    var socket = io.connect('http://192.168.2.4:8080');
 
     function sendEcho(){
         var ts = new Date();
