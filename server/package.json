@@ -1,0 +1,8 @@
+{
+  "name": "Space Game Server",
+  "description": "HTML5 + Websockets based multiplayer game",
+  "dependencies": {
+    "socket.io": "0.9.x"
+  },
+  "engine": "node >= 0.9.1"
+}
