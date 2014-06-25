@@ -58,6 +58,8 @@
     </script>
 
 <script>
+
+    // basic physics code
     var canvas = document.getElementById('gameCanvas');
     var ctx = canvas.getContext('2d');
     var keysDown = {};
@@ -125,11 +127,11 @@
     //keyUpdate function iteration after every 200 ms.
     setInterval(keyUpdate, 200);
 </script>
-<script src="http://192.168.2.4:8080/socket.io/socket.io.js"></script>
+<script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
 <script>
     var room = "";
     var seq = 0;
-    var socket = io.connect('http://192.168.2.4:8080');
+    var socket = io.connect('http://127.0.0.1:8080');
     socket.on('news', function (data) {
         console.log(data);
         socket.emit('my other event', {
@@ -144,6 +146,7 @@
             })
         })
 
+        
         socket.on('bodies', function (data) {
             //console.log(data);
 

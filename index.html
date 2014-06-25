@@ -6,6 +6,7 @@
 	<script src="js/jquery.js"></script>
 	<script src="js/bootstrap.min.js"></script>
     <script src="physicsjs-full-0.5.3.min.js"></script>
+
     
     <style>
         * {
@@ -22,6 +23,7 @@
 </head>
 
 <body>
+    <audio id="btune" loop="loop" autoplay="autoplay" src="audio/got.mp3" type="audio/mpeg" ></audio>
 	<div style="width:100%;background-image: url('img/starfield.jpg');">
 		<canvas id="gameCanvas"></canvas>
 	</div>
@@ -39,9 +41,11 @@
         </div>
           </div>
 <script>
+    // Game canvas creation
     var gameCanvas = document.getElementById('gameCanvas');
     var ctx = gameCanvas.getContext('2d');
     var keysDown = {};
+    // Image Loads (Load images first)
     var ship1Img = new Image();
     ship1Img.src = "img/ship1.png"
     var ship2Img = new Image();
@@ -57,14 +61,14 @@
     var strikeImg = new Image();
     strikeImg.src = "img/striking.png"
 
-    
-    var laser = function (x, y, s_vx, s_vy) {
+    // Object creation
+    var laser = function (x, y, s_vx, s_vy) { //velocity x and velocity y
         return Physics.body('circle', {
             x: x, // x-coordinate
             y: y, // y-coordinate
             vx: vx, // velocity in x-direction
             vy: vy, // velocity in y-direction
-            restitution: 0.2,
+            restitution: 0.2, // bounce
             radius: 3
         });
     }
@@ -82,6 +86,7 @@
 
     var asteroid = function () {
         return Physics.body('circle', {
+            //random appearance of asteroid from above
             x: 1 + (Math.random() * 900),
             y: 1,
             vx: 0.01 + (Math.random() * 0.04),
@@ -111,17 +116,24 @@
         });
     }
 
+    //physics game environment creation
     var ph = Physics(function (world) {
+        // special body creation of ship using circle
         Physics.body('ship', 'circle', function (parent) {
             return {
+            //addition of new functions 
                 thrust: function () {
                     var v = Physics.vector(
+                        //along x-axis
                         0.15 * Math.cos(this.state.angular.pos),
+                        //along y-axis (0.15 for slower moving of ship)
                         0.15 * Math.sin(this.state.angular.pos)
                     );
+                    // adding new velocity
                     this.state.vel = (v);
                     this.state.angular.vel = 0;
                 },
+                // properties of ship
                 immunity: false,
                 striking: false,
                 powerup: function(power){
@@ -143,6 +155,7 @@
                 turnl: function () {
                     this.state.angular.vel = 0.2 * (Math.PI / 180) * 1;
                 },
+                //if the ship is deleted then no object of ship is present
                 isDead: false,
                 destroy: function () {
                     var self = this;
@@ -150,6 +163,7 @@
                     if (!world) {
                         return self;
                     }
+                    // scratch pad for temporary creation of objects
                     var scratch = Physics.scratchpad();
                     var rnd = scratch.vector();
                     var pos = this.state.pos;
@@ -195,6 +209,7 @@
                     world.add(debris);
                     // remove player
                     this.isDead = true;
+                    //remove destroyed ship 
                     world.removeBody(this);
                     scratch.done();
                     return self;
@@ -202,7 +217,7 @@
 
                 shoot: function () {
                     if(this.isDead)
-                        return;
+                        return; //no laser if the ship is not in arena
 
                     this.state.angular.vel = 0;
                     var self = this;
@@ -220,6 +235,7 @@
                     // relative to the ship's current velocity
                     var laserImg = new Image();
                     laserImg.src = "img/laser-" + this.gameType + ".png";
+                    // if striking power is true then speed is 4 else keep it to 2
                     var speed = ( this.striking == true ) ? 4 : 2;
                     var laser = Physics.body('circle', {
                         x: this.state.pos.get(0) + r * cos,
@@ -231,6 +247,7 @@
                     });
                     // set a custom property for collision purposes
                     laser.gameType = 'laser-' + self.gameType;
+                    playAudio("ls.wav");
 
                     // remove the laser pulse in 600ms
                     setTimeout(function () {
@@ -243,6 +260,8 @@
             }
         });
 
+        // size in pixels
+        // aspect ratio of object is maintained
         var newWidth = 850;
         var newHeight = 400;
 
@@ -250,7 +269,7 @@
             el: 'gameCanvas',
             width: newWidth,
             height: newHeight,
-            meta: false, // don't display meta data
+            meta: true, // don't display meta data (FPS, IPF)
             styles: {
                 // set colors for the circle bodies
                 'circle': {
@@ -268,11 +287,12 @@
             world.render();
         });
         // If you want to subscribe to collision pairs
-        // emit an event for each collision pair
+        // emit an event for each collision pair, when two objects collide it detects.
         world.subscribe('collisions:detected', function (data) {
             var c;
             for (var i = 0, l = data.collisions.length; i < l; i++) {
                 c = data.collisions[i];
+                // trigger event
                 world.publish({
                     topic: 'collision-pair',
                     bodyA: c.bodyA,
@@ -288,6 +308,7 @@
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.destroy();
+                playAudio("dest.mp3");
                 $(".result").modal('show');
                 $("#myResult").html("Red ship win..!!!");
 
@@ -297,6 +318,7 @@
                 //console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.destroy();
+                playAudio("dest.mp3");
                 $(".result").modal('show');
                 $("#myResult").html("Blue ship win..!!!");
             }
@@ -310,6 +332,7 @@
                     return;
 
                 w.ship2.destroy();
+                playAudio("dest.mp3");
                  $(".result").modal('show');
                  $("#myResult").html("Red ship win..!!!");
             }
@@ -321,6 +344,7 @@
                     return;
 
                 w.ship1.destroy();
+                playAudio("dest.mp3");
                 $(".result").modal('show');
                 $("#myResult").html("Blue ship win..!!!");
             }
@@ -329,6 +353,8 @@
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.powerup("immune");
+                playAudio("pup.mp3");
+                // remove immunity after 10 seconds
                 setTimeout(function(w){
                     console.log(w);
                     ph.ship2.immunity = false;
@@ -348,6 +374,7 @@
                 console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.powerup("immune");
+                playAudio("pup.mp3");
                 setTimeout(function(w){
                     ph.ship1.immunity = false;
                 }, 10000);
@@ -365,6 +392,7 @@
                 //console.log("SHIP2",data.bodyA.gameType, data.bodyB.gameType)
                 var w = data.bodyA._world;
                 w.ship2.powerup("strike");
+                playAudio("armor.mp3");
                 setTimeout(function(w){
                     console.log(w);
                     ph.ship2.striking = false;
@@ -382,6 +410,7 @@
                 //console.log("SHIP1")
                 var w = data.bodyA._world;
                 w.ship1.powerup("strike");
+                playAudio("armor.mp3");
                 setTimeout(function(w){
                     console.log(w);
                     ph.ship1.striking = false;
@@ -396,14 +425,22 @@
             }
 
         });
-
+        
+        // behavoiur of bodies
         world.add(Physics.behavior('body-collision-detection'));
+        // if body is out of bound then let it go
         world.add(Physics.behavior('sweep-prune'));
-        // add a circle
+
+
+        // Adding all the objects
+
+        // ship1
         this.ship1 = new ship(100, 100);
         this.ship1.gameType = 'ship1';
         this.ship1.view = ship1Img;
         world.add(this.ship1);
+
+        //ship2
         this.ship2 = new ship(450, 300);
         this.ship2.gameType = 'ship2';
         this.ship2.view = ship2Img;
@@ -411,7 +448,7 @@
         // world.render();
         // ensure objects bounce when edge collision is detected
         world.add(Physics.behavior('body-impulse-response'));
-        // we don't want gravity
+        // we don't want gravity so the acceleration is 0
         world.add(Physics.behavior('constant-acceleration', {
             acc: {
                 x: 0,
@@ -437,11 +474,12 @@
             setTimeout(function () {
                 world.removeBody(immune);
                 immune = undefined;
+                playAudio("pdw.mp3");
             }, 10000);
             immune.gameType = 'immunity';
             immune.view = immuneImg;
             world.add(immune);
-        }, 30000)
+        }, 10000)
 
         // adding strike power every 50 seconds
         setInterval(function () {
@@ -449,11 +487,12 @@
             setTimeout(function () {
                 world.removeBody(strike);
                 strike = undefined;
+                playAudio("pdw.mp3");
             }, 10000);
             strike.gameType = 'striking';
             strike.view = strikeImg;
             world.add(strike);
-        }, 50000)
+        }, 10000)
 
 
         // subscribe to ticker to advance the simulation (GameLoop)
@@ -464,6 +503,7 @@
         Physics.util.ticker.start();
     });
 
+    // keeypress functions
     window.addEventListener('keydown', function (e) {
         keysDown[e.keyCode] = true;
     });
@@ -483,6 +523,7 @@
     });
 
     function keyUpdate() {
+        // used for debugging
         var vel = 0.01;
         if (87 in keysDown) {
             ph.ship2.thrust();
@@ -513,11 +554,17 @@
     }
     //keyUpdate function iteration after every 200 ms.
     setInterval(keyUpdate, 200);
-</script>
-<script src="http://192.168.2.4:8080/socket.io/socket.io.js"></script>
-<script>
 
-    var socket = io.connect('http://192.168.2.4:8080');
+    function playAudio(audio){
+    var audio = new Audio("audio/"+audio);
+    audio.play();
+}
+</script>
+ <!-- library -->
+<script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
+<script>
+    // connect to port
+    var socket = io.connect('http://127.0.0.1:8080');
 
     function sendEcho(){
         var ts = new Date();
@@ -556,7 +603,7 @@
                 obj.gameType = ph._bodies[i].gameType;
                 objs.push(obj);
             };
-            // sending the data to client
+            // sending the data to client per 100 milliseconds
             socket.emit("comm", {
                 name: room,
                 event: "bodies",
@@ -585,13 +632,13 @@
             break;
         }
     });
-    //keyUpdate function iteration after every 30 ms.
-    setInterval(keyUpdate, 200);
+    // //keyUpdate function iteration after every 30 ms.
+    // setInterval(keyUpdate, 200);
 
 
 </script>
 
-<div style="position:absolute; top:5px" id="gameId" class="well">Acquiring Game ID...</div>
+<div style="position:absolute; top:50px" id="gameId" class="well">Acquiring Game ID...</div>
 
 <div style="position:absolute; bottom:3px; left:0px">
     <div>
@@ -612,7 +659,7 @@
 </div>
 
 <script>
-
+    // for
     $("#controlThrust").click(function(e){
         ph.ship1.thrust();
     });
